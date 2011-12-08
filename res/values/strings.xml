@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pick_email_label">Browse...</string>
+    <string name="submit_rapleaf">Submit!</string>
+    <string name="app_name">Rapleaf</string>
+    <string name="email_hint">Enter an email address here</string>
+    <string name="name_hint">Enter a name here</string>
+</resources>
