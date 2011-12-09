@@ -44,16 +44,16 @@ public class RapleafActivity extends Activity {
 
 	
     final int CONTACT_PICKER_RESULT = 1001;
-    public void doLaunchContactPicker(View view){
+    public void doLaunchContactPicker(View view){  //called when contact picker is selected
     	Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, Contacts.CONTENT_URI);
     	startActivityForResult(contactPickerIntent, CONTACT_PICKER_RESULT);
     }
-    public void submitOnClick(View view){
+    public void submitOnClick(View view){ //called when user clicks submit
     	String getRapLeafRequest = getRapLeafRequest();
     	try {
-    		JSONObject jsonobject = new JSONObject(getRapLeafRequest);
-    		String resultString = jsonobject.toString();
-    		resultString = resultString.substring(1, resultString.length()-2);
+    		JSONObject jsonobject = new JSONObject(getRapLeafRequest); //stores the response as a JSON object
+    		String resultString = jsonobject.toString(); //converts it to a string
+    		resultString = resultString.substring(1, resultString.length()-2);  //parses the information so it can be viewed easier
     		resultString = resultString.replace('"', ' ');
     		resultString = resultString.replaceAll(",", "\n");
     		TextView results = (TextView)findViewById(R.id.results);
@@ -72,19 +72,19 @@ public class RapleafActivity extends Activity {
     	String lastName = "";
     	String beforeAt = "";
     	String afterAt = "";
-    	EditText setFirstName = (EditText)findViewById(R.id.name_form);
+    	EditText setFirstName = (EditText)findViewById(R.id.name_form);  //gets name from form
     	firstName = setFirstName.getEditableText().toString();
     	int spaceIndex = 0;
     	if (firstName.contains(" "))
     		spaceIndex = firstName.indexOf(" ");
     	Log.v(DEBUG_TAG, "spaceIdx: " + spaceIndex);
-    	lastName = firstName.substring(spaceIndex+1);
+    	lastName = firstName.substring(spaceIndex+1); //parses name
     	firstName = firstName.substring(0, spaceIndex);
     	Log.v(DEBUG_TAG, "First Name = " + firstName);
     	Log.v(DEBUG_TAG, "Last Name = " + lastName);
-    	EditText setEmail = (EditText)findViewById(R.id.email_form);
+    	EditText setEmail = (EditText)findViewById(R.id.email_form); //gets email from form
     	beforeAt= setEmail.getEditableText().toString();
-    	int atIndex = 0;
+    	int atIndex = 0; //parses email
     	if (beforeAt.contains("@"))
     		atIndex = beforeAt.indexOf("@");
     	else 
@@ -94,7 +94,7 @@ public class RapleafActivity extends Activity {
     	Log.v(DEBUG_TAG, "beforeAt =" + beforeAt);
     	Log.v(DEBUG_TAG, "afterAt =" + afterAt);
     	String url = "https://personalize.rapleaf.com/v4/dr?first=" + firstName + "&last=" + lastName + "&email=" + beforeAt + "%40" + afterAt + "&api_key=7e67d0b8103f766d9333abd7e7ee6c5f";
-    		
+    	//builds the HTTP address	
     	StringBuilder builder = new StringBuilder();
     	HttpClient httpclient = new DefaultHttpClient();
     	HttpGet httpGet = new HttpGet(url);
@@ -124,7 +124,7 @@ public class RapleafActivity extends Activity {
     	return builder.toString();
     }
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){ //called when contact picker returns
     	if (resultCode == RESULT_OK){
     		switch(requestCode){
     			case CONTACT_PICKER_RESULT:
@@ -134,13 +134,13 @@ public class RapleafActivity extends Activity {
     			Cursor cursor = null;
     			
     			try{
-    			Bundle extras = data.getExtras();
+    			/* Bundle extras = data.getExtras(); //stored extras, but didn't need them for this project
     			Set<String> keys = extras.keySet();
     			Iterator<String> it = keys.iterator();
     			while (it.hasNext()){
     				String key = it.next();
     				Log.v(DEBUG_TAG, key + "[" + extras.get(key) + "]");
-    			}
+    			} */
     			Uri result = data.getData(); //get data returned from the contact picker
     			Log.v(DEBUG_TAG, "retrieved result: " + result.toString());
     			
@@ -148,20 +148,21 @@ public class RapleafActivity extends Activity {
     			Log.v(DEBUG_TAG, "element: " + id.toString());
     			
     			cursor = getContentResolver().query(Email.CONTENT_URI, null, Email.CONTACT_ID + "=?", new String[]{id}, null);    			
-    			cursor.moveToFirst();  
+    			//checks the different columns the cursor contains
+    			/* cursor.moveToFirst();  
     			String columns[] = cursor.getColumnNames();  
     			for (String column : columns) {  
     			    int index = cursor.getColumnIndex(column);  
     			    Log.v(DEBUG_TAG, "Column: " + column + " == ["  
     			            + cursor.getString(index) + "]"); 
-    			} 
+    			} */
     			if (cursor.moveToFirst()) {
     				int emailIdx = cursor.getColumnIndex(Email.DATA);//email addresses stored in column Email.DATA
     				int nameIdx = cursor.getColumnIndex("display_name");
     				email = cursor.getString(emailIdx);
     				Log.v(DEBUG_TAG, "nameIdx: " + StructuredName.DISPLAY_NAME);
     				name = cursor.getString(nameIdx);
-    				
+    				//gets the email and name
     				Log.v(DEBUG_TAG, "read email address: " + email);
     			}
     			else Log.w(DEBUG_TAG, "No results");
@@ -174,12 +175,12 @@ public class RapleafActivity extends Activity {
     				if (cursor != null)
     					cursor.close();
     			
-    			EditText nameEntry = (EditText)findViewById(R.id.name_form);
+    			EditText nameEntry = (EditText)findViewById(R.id.name_form); //sets name to the name form
     			nameEntry.setText(name);
         		if (name.length() == 0){
         			Toast.makeText(this, "I didn't detect a name :O", Toast.LENGTH_LONG).show();
         		} 
-    			EditText emailEntry = (EditText)findViewById(R.id.email_form);
+    			EditText emailEntry = (EditText)findViewById(R.id.email_form); //sets email to the email form
     			emailEntry.setText(email);
     			if (email.length() == 0){
     				Toast.makeText(this, "I didn't detect an email :O", Toast.LENGTH_LONG).show();
